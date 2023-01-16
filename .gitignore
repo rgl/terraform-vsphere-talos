@@ -1,0 +1,7 @@
+.terraform/
+*terraform.tfstate*
+tfplan
+*.ova*
+talosconfig.yml
+kubeconfig.yml
+secrets*
