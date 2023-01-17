@@ -124,6 +124,29 @@ kubectl cluster-info
 kubectl get nodes -o wide
 ```
 
+Create the `talos-vmtoolsd-config` secret:
+
+```bash
+talosctl \
+  -n $c0 \
+  config new talos-vmtoolsd-config.yaml \
+  --roles os:admin
+kubectl \
+  -n kube-system \
+  create secret generic talos-vmtoolsd-config \
+  --from-file talosconfig=talos-vmtoolsd-config.yaml
+rm talos-vmtoolsd-config.yaml
+```
+
+Wait for the `talos-vmtoolsd` DaemonSet to be deployed:
+
+```bash
+kubectl \
+  -n kube-system \
+  rollout status daemonset \
+  talos-vmtoolsd
+```
+
 Destroy the infrastructure:
 
 ```bash

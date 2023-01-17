@@ -159,6 +159,11 @@ locals {
           }
         }
       }
+      extraManifests = [
+        # see https://github.com/mologie/talos-vmtoolsd
+        # see https://www.talos.dev/v1.3/talos-guides/install/virtualized-platforms/vmware/
+        "https://github.com/mologie/talos-vmtoolsd/releases/download/0.3.1/talos-vmtoolsd-0.3.1.yaml"
+      ]
     }
   }
 }
