@@ -73,6 +73,7 @@ govc vm.upgrade -vm.ipath "$vm_ipath"
 govc vm.change -vm.ipath "$vm_ipath" \
   -g other5xLinux64Guest \
   -e disk.enableUUID=TRUE
+govc vm.info -vm.ipath "$vm_ipath" -json >talos-$talos_version-amd64.json
 govc vm.markastemplate -vm.ipath "$vm_ipath"
 rm -f disk.raw talos-$talos_version-vmware-amd64.*
 ```
