@@ -68,8 +68,9 @@ govc import.ova \
   -name $(basename $TF_VAR_vsphere_talos_template) \
   -options talos-$talos_version-vmware-amd64.ova.json \
   talos-$talos_version-vmware-amd64.ova
-govc vm.markastemplate \
-  "//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
+vm_ipath="//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
+govc vm.upgrade -vm.ipath "$vm_ipath"
+govc vm.markastemplate -vm.ipath "$vm_ipath"
 rm -f disk.raw talos-$talos_version-vmware-amd64.*
 ```
 
