@@ -58,9 +58,10 @@ wget \
   -O talos-$talos_version-vmware-amd64.ova \
   https://github.com/siderolabs/talos/releases/download/v$talos_version/vmware-amd64.ova
 govc import.spec talos-$talos_version-vmware-amd64.ova \
+  | jq \
+      --arg network "$TF_VAR_vsphere_network" \
+      '.NetworkMapping[0].Network = $network' \
   >talos-$talos_version-vmware-amd64.ova.json
-sed -i -E "s,(\"Network\":) .+,\\1 \"$TF_VAR_vsphere_network\",g" \
-  talos-$talos_version-vmware-amd64.ova.json
 govc import.ova \
   -ds $TF_VAR_vsphere_datastore \
   -folder "//$TF_VAR_vsphere_datacenter/vm/$(dirname $TF_VAR_vsphere_talos_template)" \
