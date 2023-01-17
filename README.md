@@ -70,6 +70,9 @@ govc import.ova \
   talos-$talos_version-vmware-amd64.ova
 vm_ipath="//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
 govc vm.upgrade -vm.ipath "$vm_ipath"
+govc vm.change -vm.ipath "$vm_ipath" \
+  -g other5xLinux64Guest \
+  -e disk.enableUUID=TRUE
 govc vm.markastemplate -vm.ipath "$vm_ipath"
 rm -f disk.raw talos-$talos_version-vmware-amd64.*
 ```
