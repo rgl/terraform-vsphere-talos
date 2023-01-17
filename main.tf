@@ -130,7 +130,8 @@ locals {
   gateway          = "10.17.4.1"
   nameservers      = ["1.1.1.1", "1.0.0.1"]
   timeservers      = ["pool.ntp.org"]
-  cluster_endpoint = "https://${local.controller_nodes[0].address}:6443" # k8s api-server endpoint.
+  cluster_vip      = "10.17.4.9"
+  cluster_endpoint = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
   controller_nodes = [
     for i in range(var.controller_count) : {
       name    = "c${i}"
@@ -270,6 +271,9 @@ resource "talos_machine_configuration_controlplane" "controller" {
                   gateway = local.gateway
                 }
               ]
+              vip = {
+                ip = local.cluster_vip
+              }
             }
           ]
           nameservers = local.nameservers
