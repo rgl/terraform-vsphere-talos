@@ -16,7 +16,7 @@ terraform {
     # see https://github.com/hashicorp/terraform-provider-vsphere
     vsphere = {
       source  = "hashicorp/vsphere"
-      version = "2.2.0"
+      version = "2.3.1"
     }
     # see https://registry.terraform.io/providers/siderolabs/talos
     # see https://github.com/siderolabs/terraform-provider-talos
