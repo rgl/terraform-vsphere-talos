@@ -11,7 +11,7 @@ wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.
 unzip terraform_1.3.9_linux_amd64.zip
 sudo install terraform /usr/local/bin
 rm terraform terraform_*_linux_amd64.zip
-wget https://github.com/vmware/govmomi/releases/download/v0.29.0/govc_Linux_x86_64.tar.gz
+wget https://github.com/vmware/govmomi/releases/download/v0.30.2/govc_Linux_x86_64.tar.gz
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
 rm govc govc_Linux_x86_64.tar.gz
