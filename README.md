@@ -198,5 +198,6 @@ Kubernetes:
 ```bash
 kubectl get events --all-namespaces --watch
 kubectl --namespace kube-system get events --watch
+kubectl --namespace kube-system debug node/w0 --stdin --tty --image=busybox:1.36
 kubectl run busybox -it --rm --restart=Never --image=busybox:1.36 -- nslookup -type=a talos.dev
 ```
