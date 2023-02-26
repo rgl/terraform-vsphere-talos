@@ -126,12 +126,13 @@ variable "cluster_name" {
 }
 
 locals {
-  netmask          = 24
-  gateway          = "10.17.4.1"
-  nameservers      = ["1.1.1.1", "1.0.0.1"]
-  timeservers      = ["pool.ntp.org"]
-  cluster_vip      = "10.17.4.9"
-  cluster_endpoint = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
+  kubernetes_version = "1.26.1"
+  netmask            = 24
+  gateway            = "10.17.4.1"
+  nameservers        = ["1.1.1.1", "1.0.0.1"]
+  timeservers        = ["pool.ntp.org"]
+  cluster_vip        = "10.17.4.9"
+  cluster_endpoint   = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
   controller_nodes = [
     for i in range(var.controller_count) : {
       name    = "c${i}"
@@ -252,10 +253,11 @@ resource "talos_machine_secrets" "machine_secrets" {
 }
 
 resource "talos_machine_configuration_controlplane" "controller" {
-  count            = var.controller_count
-  cluster_name     = var.cluster_name
-  cluster_endpoint = local.cluster_endpoint
-  machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
+  count              = var.controller_count
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = local.cluster_endpoint
+  machine_secrets    = talos_machine_secrets.machine_secrets.machine_secrets
+  kubernetes_version = local.kubernetes_version
   config_patches = [
     yamlencode(local.common_machine_config),
     yamlencode({
@@ -292,10 +294,11 @@ resource "talos_machine_configuration_controlplane" "controller" {
 }
 
 resource "talos_machine_configuration_worker" "worker" {
-  count            = var.worker_count
-  cluster_name     = var.cluster_name
-  cluster_endpoint = local.cluster_endpoint
-  machine_secrets  = talos_machine_secrets.machine_secrets.machine_secrets
+  count              = var.worker_count
+  cluster_name       = var.cluster_name
+  cluster_endpoint   = local.cluster_endpoint
+  machine_secrets    = talos_machine_secrets.machine_secrets.machine_secrets
+  kubernetes_version = local.kubernetes_version
   config_patches = [
     yamlencode(local.common_machine_config),
     yamlencode({
