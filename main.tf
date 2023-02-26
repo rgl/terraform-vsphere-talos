@@ -334,12 +334,6 @@ resource "talos_machine_configuration_worker" "worker" {
 resource "talos_client_configuration" "talos" {
   cluster_name    = var.cluster_name
   machine_secrets = talos_machine_secrets.machine_secrets.machine_secrets
-}
-
-# NB this is required to workaround https://github.com/siderolabs/terraform-provider-talos/issues/43.
-resource "talos_client_configuration" "client" {
-  cluster_name    = var.cluster_name
-  machine_secrets = talos_machine_secrets.machine_secrets.machine_secrets
   endpoints       = [for n in local.controller_nodes : n.address]
 }
 
@@ -356,7 +350,7 @@ resource "talos_cluster_kubeconfig" "talos" {
 }
 
 output "talosconfig" {
-  value     = talos_client_configuration.client.talos_config
+  value     = talos_client_configuration.talos.talos_config
   sensitive = true
 }
 
