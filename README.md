@@ -7,8 +7,8 @@ An example [Talos Linux Kubernetes cluster](https://www.talos.dev/) in vSphere V
 Install Terraform and govc:
 
 ```bash
-wget https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_linux_amd64.zip
-unzip terraform_1.3.7_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.zip
+unzip terraform_1.3.9_linux_amd64.zip
 sudo install terraform /usr/local/bin
 rm terraform terraform_*_linux_amd64.zip
 wget https://github.com/vmware/govmomi/releases/download/v0.29.0/govc_Linux_x86_64.tar.gz
