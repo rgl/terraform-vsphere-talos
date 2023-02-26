@@ -61,7 +61,7 @@ variable "vsphere_folder" {
 }
 
 variable "vsphere_talos_template" {
-  default = "templates/talos-1.3.2-amd64"
+  default = "templates/talos-1.3.5-amd64"
 }
 
 provider "vsphere" {

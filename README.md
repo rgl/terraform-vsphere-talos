@@ -21,6 +21,7 @@ Save your environment details as a script that sets the terraform variables from
 
 ```bash
 cat >secrets.sh <<'EOF'
+talos_version='1.3.5'
 export TF_VAR_prefix='terraform-talos-example'
 export TF_VAR_vsphere_user='administrator@vsphere.local'
 export TF_VAR_vsphere_password='password'
@@ -30,7 +31,7 @@ export TF_VAR_vsphere_compute_cluster='Cluster'
 export TF_VAR_vsphere_datastore='Datastore'
 export TF_VAR_vsphere_network='VM Network'
 export TF_VAR_vsphere_folder='terraform-talos-example'
-export TF_VAR_vsphere_talos_template='vagrant-templates/talos-1.3.2-amd64'
+export TF_VAR_vsphere_talos_template='vagrant-templates/talos-$talos_version-amd64'
 export GOVC_INSECURE='1'
 export GOVC_URL="https://$TF_VAR_vsphere_server/sdk"
 export GOVC_USERNAME="$TF_VAR_vsphere_user"
@@ -43,7 +44,7 @@ EOF
 Install talosctl:
 
 ```bash
-talos_version='1.3.2'
+source secrets.sh
 wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
 sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
 rm talosctl-linux-amd64
@@ -53,7 +54,6 @@ Install the talos VM template into vSphere:
 
 ```bash
 source secrets.sh
-talos_version='1.3.2'
 wget \
   -O talos-$talos_version-vmware-amd64.ova \
   https://github.com/siderolabs/talos/releases/download/v$talos_version/vmware-amd64.ova
