@@ -126,7 +126,7 @@ variable "cluster_name" {
 }
 
 locals {
-  kubernetes_version = "1.26.1"
+  kubernetes_version = "1.26.2"
   netmask            = 24
   gateway            = "10.17.4.1"
   nameservers        = ["1.1.1.1", "1.0.0.1"]
