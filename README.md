@@ -39,6 +39,8 @@ export GOVC_PASSWORD="$TF_VAR_vsphere_password"
 EOF
 ```
 
+**NB** Talos [uses the flannel cni with the vxlan backend](https://github.com/siderolabs/talos/blob/v1.3.5/internal/app/machined/pkg/controllers/k8s/templates.go#L538-L541). To change it, you have to either modify (and maintain) the `kube-flannel-cfg` ConfigMap with `kubectl edit configmaps -n kube-system kube-flannel-cfg` or use (and maintain) a custom cni.
+
 **NB** Ensure MAC spoofing (MAC address changes) is allowed at the vSwitch of the selected `TF_VAR_vsphere_network` network. This is required by the flannel cni (the default talos cni).
 
 **NB** You could also add these variables definitions into a `terraform.tfvars` file, but I find the environment variables more versatile as they can also be used from other tools, like govc.
