@@ -127,22 +127,23 @@ variable "cluster_name" {
 
 locals {
   kubernetes_version = "1.26.2"
-  netmask            = 24
-  gateway            = "10.17.4.1"
   nameservers        = ["1.1.1.1", "1.0.0.1"]
   timeservers        = ["pool.ntp.org"]
-  cluster_vip        = "10.17.4.9"
+  netmask            = 24
+  net                = "10.17.4"
+  gateway            = "${local.net}.1"
+  cluster_vip        = "${local.net}.9"
   cluster_endpoint   = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
   controller_nodes = [
     for i in range(var.controller_count) : {
       name    = "c${i}"
-      address = "10.17.4.${10 + i}"
+      address = "${local.net}.${10 + i}"
     }
   ]
   worker_nodes = [
     for i in range(var.worker_count) : {
       name    = "w${i}"
-      address = "10.17.4.${20 + i}"
+      address = "${local.net}.${20 + i}"
     }
   ]
   common_machine_config = {
