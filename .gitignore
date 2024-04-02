@@ -1,7 +1,9 @@
+tmp/
 .terraform/
 *terraform.tfstate*
 tfplan
 *.ova*
+*.log
 talos-*-amd64.json
 talosconfig.yml
 kubeconfig.yml

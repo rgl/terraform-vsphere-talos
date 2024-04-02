@@ -1,28 +1,24 @@
 # see https://github.com/hashicorp/terraform
 terraform {
-  required_version = "1.3.9"
+  required_version = "1.7.5"
   required_providers {
     # see https://registry.terraform.io/providers/hashicorp/random
+    # see https://github.com/hashicorp/terraform-provider-random
     random = {
       source  = "hashicorp/random"
-      version = "3.4.3"
-    }
-    # see https://registry.terraform.io/providers/hashicorp/template
-    template = {
-      source  = "hashicorp/template"
-      version = "2.2.0"
+      version = "3.6.0"
     }
     # see https://registry.terraform.io/providers/hashicorp/vsphere
     # see https://github.com/hashicorp/terraform-provider-vsphere
     vsphere = {
       source  = "hashicorp/vsphere"
-      version = "2.3.1"
+      version = "2.7.0"
     }
     # see https://registry.terraform.io/providers/siderolabs/talos
     # see https://github.com/siderolabs/terraform-provider-talos
     talos = {
       source  = "siderolabs/talos"
-      version = "0.1.1"
+      version = "0.4.0"
     }
   }
 }
@@ -61,7 +57,7 @@ variable "vsphere_folder" {
 }
 
 variable "vsphere_talos_template" {
-  default = "templates/talos-1.3.5-amd64"
+  default = "templates/talos-1.6.7-amd64"
 }
 
 provider "vsphere" {
@@ -120,20 +116,43 @@ variable "worker_count" {
   }
 }
 
+# see https://github.com/siderolabs/talos/releases
+# see https://www.talos.dev/v1.6/introduction/support-matrix/
+variable "talos_version" {
+  type = string
+  # renovate: datasource=github-releases depName=siderolabs/talos
+  default = "1.6.7"
+  validation {
+    condition     = can(regex("^\\d+(\\.\\d+)+", var.talos_version))
+    error_message = "Must be a version number."
+  }
+}
+
+# see https://github.com/siderolabs/kubelet/pkgs/container/kubelet
+# see https://www.talos.dev/v1.6/introduction/support-matrix/
+variable "kubernetes_version" {
+  type = string
+  # renovate: datasource=github-releases depName=siderolabs/kubelet
+  default = "1.29.3"
+  validation {
+    condition     = can(regex("^\\d+(\\.\\d+)+", var.kubernetes_version))
+    error_message = "Must be a version number."
+  }
+}
+
 variable "cluster_name" {
   type    = string
   default = "example"
 }
 
 locals {
-  kubernetes_version = "1.26.2"
-  nameservers        = ["1.1.1.1", "1.0.0.1"]
-  timeservers        = ["pool.ntp.org"]
-  netmask            = 24
-  net                = "10.17.4"
-  gateway            = "${local.net}.1"
-  cluster_vip        = "${local.net}.9"
-  cluster_endpoint   = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
+  netmask          = 24
+  net              = "10.17.4"
+  gateway          = "${local.net}.1"
+  cluster_vip      = "${local.net}.9"
+  nameservers      = ["1.1.1.1", "1.0.0.1"]
+  timeservers      = ["pool.ntp.org"]
+  cluster_endpoint = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
   controller_nodes = [
     for i in range(var.controller_count) : {
       name    = "c${i}"
@@ -147,9 +166,25 @@ locals {
     }
   ]
   common_machine_config = {
+    machine = {
+      # NB the install section changes are only applied after a talos upgrade
+      #    (which we do not do). instead, its preferred to create a custom
+      #    talos image, which is created in the installed state.
+      #install = {}
+      features = {
+        # see https://www.talos.dev/v1.6/kubernetes-guides/configuration/kubeprism/
+        # see talosctl -n $c0 read /etc/kubernetes/kubeconfig-kubelet | yq .clusters[].cluster.server
+        # NB if you use a non-default CNI, you must configure it to use the
+        #    https://localhost:7445 kube-apiserver endpoint.
+        kubePrism = {
+          enabled = true
+          port    = 7445
+        }
+      }
+    }
     cluster = {
-      # see https://www.talos.dev/v1.3/talos-guides/discovery/
-      # see https://www.talos.dev/v1.3/reference/configuration/#clusterdiscoveryconfig
+      # see https://www.talos.dev/v1.6/talos-guides/discovery/
+      # see https://www.talos.dev/v1.6/reference/configuration/#clusterdiscoveryconfig
       discovery = {
         enabled = true
         registries = {
@@ -161,11 +196,6 @@ locals {
           }
         }
       }
-      extraManifests = [
-        # see https://github.com/mologie/talos-vmtoolsd
-        # see https://www.talos.dev/v1.3/talos-guides/install/virtualized-platforms/vmware/
-        "https://github.com/mologie/talos-vmtoolsd/releases/download/0.3.1/talos-vmtoolsd-0.3.1.yaml"
-      ]
     }
   }
 }
@@ -209,7 +239,14 @@ resource "vsphere_virtual_machine" "controller" {
   }
   # NB this extra_config data ends-up inside the VM .vmx file.
   extra_config = {
-    "guestinfo.talos.config" = base64encode(talos_machine_configuration_controlplane.controller[count.index].machine_config)
+    "guestinfo.talos.config" = base64encode(data.talos_machine_configuration.controller[count.index].machine_configuration)
+  }
+  lifecycle {
+    # TODO why is terraform plan trying to modify these?
+    ignore_changes = [
+      ept_rvi_mode,
+      hv_mode,
+    ]
   }
 }
 
@@ -246,19 +283,34 @@ resource "vsphere_virtual_machine" "worker" {
   }
   # NB this extra_config data ends-up inside the VM .vmx file.
   extra_config = {
-    "guestinfo.talos.config" = base64encode(talos_machine_configuration_worker.worker[count.index].machine_config)
+    "guestinfo.talos.config" = base64encode(data.talos_machine_configuration.worker[count.index].machine_configuration)
+  }
+  lifecycle {
+    # TODO why is terraform plan trying to modify these?
+    ignore_changes = [
+      ept_rvi_mode,
+      hv_mode,
+    ]
   }
 }
 
-resource "talos_machine_secrets" "machine_secrets" {
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/resources/machine_secrets
+resource "talos_machine_secrets" "talos" {
+  talos_version = "v${var.talos_version}"
 }
 
-resource "talos_machine_configuration_controlplane" "controller" {
+
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/data-sources/machine_configuration
+data "talos_machine_configuration" "controller" {
   count              = var.controller_count
   cluster_name       = var.cluster_name
   cluster_endpoint   = local.cluster_endpoint
-  machine_secrets    = talos_machine_secrets.machine_secrets.machine_secrets
-  kubernetes_version = local.kubernetes_version
+  machine_secrets    = talos_machine_secrets.talos.machine_secrets
+  machine_type       = "controlplane"
+  talos_version      = "v${var.talos_version}"
+  kubernetes_version = var.kubernetes_version
+  examples           = false
+  docs               = false
   config_patches = [
     yamlencode(local.common_machine_config),
     yamlencode({
@@ -279,6 +331,7 @@ resource "talos_machine_configuration_controlplane" "controller" {
                   gateway = local.gateway
                 }
               ]
+              # see https://www.talos.dev/v1.6/talos-guides/network/vip/
               vip = {
                 ip = local.cluster_vip
               }
@@ -290,16 +343,21 @@ resource "talos_machine_configuration_controlplane" "controller" {
           servers = local.timeservers
         }
       }
-    })
+    }),
   ]
 }
 
-resource "talos_machine_configuration_worker" "worker" {
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/data-sources/machine_configuration
+data "talos_machine_configuration" "worker" {
   count              = var.worker_count
   cluster_name       = var.cluster_name
   cluster_endpoint   = local.cluster_endpoint
-  machine_secrets    = talos_machine_secrets.machine_secrets.machine_secrets
-  kubernetes_version = local.kubernetes_version
+  machine_secrets    = talos_machine_secrets.talos.machine_secrets
+  machine_type       = "worker"
+  talos_version      = "v${var.talos_version}"
+  kubernetes_version = var.kubernetes_version
+  examples           = false
+  docs               = false
   config_patches = [
     yamlencode(local.common_machine_config),
     yamlencode({
@@ -328,35 +386,44 @@ resource "talos_machine_configuration_worker" "worker" {
           servers = local.timeservers
         }
       }
-    })
+    }),
   ]
 }
 
-resource "talos_client_configuration" "talos" {
-  cluster_name    = var.cluster_name
-  machine_secrets = talos_machine_secrets.machine_secrets.machine_secrets
-  endpoints       = [for n in local.controller_nodes : n.address]
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/data-sources/client_configuration
+data "talos_client_configuration" "talos" {
+  cluster_name         = var.cluster_name
+  client_configuration = talos_machine_secrets.talos.client_configuration
+  endpoints            = [for node in local.controller_nodes : node.address]
 }
 
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/data-sources/cluster_kubeconfig
+data "talos_cluster_kubeconfig" "talos" {
+  client_configuration = talos_machine_secrets.talos.client_configuration
+  endpoint             = local.controller_nodes[0].address
+  node                 = local.controller_nodes[0].address
+  depends_on = [
+    talos_machine_bootstrap.talos,
+  ]
+}
+
+// see https://registry.terraform.io/providers/siderolabs/talos/0.4.0/docs/resources/machine_bootstrap
 resource "talos_machine_bootstrap" "talos" {
-  talos_config = talos_client_configuration.talos.talos_config
-  endpoint     = local.controller_nodes[0].address
-  node         = local.controller_nodes[0].address
-}
-
-resource "talos_cluster_kubeconfig" "talos" {
-  talos_config = talos_client_configuration.talos.talos_config
-  endpoint     = local.controller_nodes[0].address
-  node         = local.controller_nodes[0].address
+  client_configuration = talos_machine_secrets.talos.client_configuration
+  endpoint             = local.controller_nodes[0].address
+  node                 = local.controller_nodes[0].address
+  depends_on = [
+    vsphere_virtual_machine.controller,
+  ]
 }
 
 output "talosconfig" {
-  value     = talos_client_configuration.talos.talos_config
+  value     = data.talos_client_configuration.talos.talos_config
   sensitive = true
 }
 
 output "kubeconfig" {
-  value     = talos_cluster_kubeconfig.talos.kube_config
+  value     = data.talos_cluster_kubeconfig.talos.kubeconfig_raw
   sensitive = true
 }
 

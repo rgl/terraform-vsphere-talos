@@ -7,11 +7,11 @@ An example [Talos Linux Kubernetes cluster](https://www.talos.dev/) in vSphere V
 Install Terraform and govc:
 
 ```bash
-wget https://releases.hashicorp.com/terraform/1.3.9/terraform_1.3.9_linux_amd64.zip
-unzip terraform_1.3.9_linux_amd64.zip
+wget https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
+unzip terraform_1.7.5_linux_amd64.zip
 sudo install terraform /usr/local/bin
 rm terraform terraform_*_linux_amd64.zip
-wget https://github.com/vmware/govmomi/releases/download/v0.30.2/govc_Linux_x86_64.tar.gz
+wget https://github.com/vmware/govmomi/releases/download/v0.36.2/govc_Linux_x86_64.tar.gz
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
 rm govc govc_Linux_x86_64.tar.gz
@@ -21,7 +21,7 @@ Save your environment details as a script that sets the terraform variables from
 
 ```bash
 cat >secrets.sh <<'EOF'
-talos_version='1.3.5'
+talos_version='1.6.7'
 export TF_VAR_prefix='terraform-talos-example'
 export TF_VAR_vsphere_user='administrator@vsphere.local'
 export TF_VAR_vsphere_password='password'
@@ -39,7 +39,7 @@ export GOVC_PASSWORD="$TF_VAR_vsphere_password"
 EOF
 ```
 
-**NB** Talos [uses the flannel cni with the vxlan backend](https://github.com/siderolabs/talos/blob/v1.3.5/internal/app/machined/pkg/controllers/k8s/templates.go#L538-L541). To change it, you have to either modify (and maintain) the `kube-flannel-cfg` ConfigMap with `kubectl edit configmaps -n kube-system kube-flannel-cfg` or use (and maintain) a custom cni.
+**NB** Talos [uses the flannel cni with the vxlan backend](https://github.com/siderolabs/talos/blob/v1.6.7/pkg/flannel/template.go#L112-L115). To change it, you have to either modify (and maintain) the `kube-flannel-cfg` ConfigMap with `kubectl edit configmaps -n kube-system kube-flannel-cfg` or use (and maintain) a custom cni.
 
 **NB** Ensure MAC spoofing (MAC address changes) is allowed at the vSwitch of the selected `TF_VAR_vsphere_network` network. This is required by the flannel cni (the default talos cni).
 
@@ -52,34 +52,6 @@ source secrets.sh
 wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
 sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
 rm talosctl-linux-amd64
-```
-
-Install the talos VM template into vSphere:
-
-```bash
-source secrets.sh
-wget \
-  -O talos-$talos_version-vmware-amd64.ova \
-  https://github.com/siderolabs/talos/releases/download/v$talos_version/vmware-amd64.ova
-govc import.spec talos-$talos_version-vmware-amd64.ova \
-  | jq \
-      --arg network "$TF_VAR_vsphere_network" \
-      '.NetworkMapping[0].Network = $network' \
-  >talos-$talos_version-vmware-amd64.ova.json
-govc import.ova \
-  -ds $TF_VAR_vsphere_datastore \
-  -folder "//$TF_VAR_vsphere_datacenter/vm/$(dirname $TF_VAR_vsphere_talos_template)" \
-  -name $(basename $TF_VAR_vsphere_talos_template) \
-  -options talos-$talos_version-vmware-amd64.ova.json \
-  talos-$talos_version-vmware-amd64.ova
-vm_ipath="//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
-govc vm.upgrade -vm.ipath "$vm_ipath"
-govc vm.change -vm.ipath "$vm_ipath" \
-  -g other5xLinux64Guest \
-  -e disk.enableUUID=TRUE
-govc vm.info -vm.ipath "$vm_ipath" -json >talos-$talos_version-amd64.json
-govc vm.markastemplate -vm.ipath "$vm_ipath"
-rm -f disk.raw talos-$talos_version-vmware-amd64.*
 ```
 
 Ensure your machine can access the control plane ports:
@@ -96,10 +68,34 @@ modified to work in your environment:
 vim main.tf
 ```
 
-Initialize terraform:
+Create the talos ova image, and initialize terraform:
 
 ```bash
 ./do init
+```
+
+Install the talos VM template into vSphere:
+
+```bash
+source secrets.sh
+govc import.spec tmp/talos/talos-$talos_version-vmware-amd64.ova \
+  | jq \
+      --arg network "$TF_VAR_vsphere_network" \
+      '.NetworkMapping[0].Network = $network' \
+  >talos-$talos_version-vmware-amd64.ova.json
+govc import.ova \
+  -ds $TF_VAR_vsphere_datastore \
+  -folder "//$TF_VAR_vsphere_datacenter/vm/$(dirname $TF_VAR_vsphere_talos_template)" \
+  -name $(basename $TF_VAR_vsphere_talos_template) \
+  -options talos-$talos_version-vmware-amd64.ova.json \
+  tmp/talos/talos-$talos_version-vmware-amd64.ova
+vm_ipath="//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
+govc vm.upgrade -vm.ipath "$vm_ipath"
+govc vm.change -vm.ipath "$vm_ipath" \
+  -g other6xLinux64Guest \
+  -e disk.enableUUID=TRUE
+govc vm.info -vm.ipath "$vm_ipath" -json >talos-$talos_version-amd64.json
+govc vm.markastemplate -vm.ipath "$vm_ipath"
 ```
 
 Create the infrastructure:
@@ -128,29 +124,6 @@ kubectl cluster-info
 kubectl get nodes -o wide
 ```
 
-Create the `talos-vmtoolsd-config` secret:
-
-```bash
-talosctl \
-  -n $c0 \
-  config new talos-vmtoolsd-config.yaml \
-  --roles os:admin
-kubectl \
-  -n kube-system \
-  create secret generic talos-vmtoolsd-config \
-  --from-file talosconfig=talos-vmtoolsd-config.yaml
-rm talos-vmtoolsd-config.yaml
-```
-
-Wait for the `talos-vmtoolsd` DaemonSet to be deployed:
-
-```bash
-kubectl \
-  -n kube-system \
-  rollout status daemonset \
-  talos-vmtoolsd
-```
-
 Destroy the infrastructure:
 
 ```bash
@@ -162,7 +135,8 @@ time ./do destroy
 Talos:
 
 ```bash
-# see https://www.talos.dev/v1.3/advanced/troubleshooting-control-plane/
+# see https://www.talos.dev/v1.6/advanced/troubleshooting-control-plane/
+talosctl -n $c0 service ext-talos-vmtoolsd status
 talosctl -n $c0 service etcd status
 talosctl -n $c0 etcd members
 talosctl -n $c0 get members
