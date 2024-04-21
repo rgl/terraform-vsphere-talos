@@ -1,21 +1,15 @@
 locals {
-  netmask          = 24
-  net              = "10.17.4"
-  gateway          = "${local.net}.1"
-  cluster_vip      = "${local.net}.9"
-  nameservers      = ["1.1.1.1", "1.0.0.1"]
-  timeservers      = ["pool.ntp.org"]
-  cluster_endpoint = "https://${local.cluster_vip}:6443" # k8s kube-apiserver endpoint.
+  network_mask = tonumber(split("/", var.cluster_node_network)[1])
   controller_nodes = [
     for i in range(var.controller_count) : {
       name    = "c${i}"
-      address = "${local.net}.${10 + i}"
+      address = cidrhost(var.cluster_node_network, var.cluster_node_network_first_controller_hostnum + i)
     }
   ]
   worker_nodes = [
     for i in range(var.worker_count) : {
       name    = "w${i}"
-      address = "${local.net}.${20 + i}"
+      address = cidrhost(var.cluster_node_network, var.cluster_node_network_first_worker_hostnum + i)
     }
   ]
   common_machine_config = {
@@ -62,7 +56,7 @@ resource "talos_machine_secrets" "talos" {
 data "talos_machine_configuration" "controller" {
   count              = var.controller_count
   cluster_name       = var.cluster_name
-  cluster_endpoint   = local.cluster_endpoint
+  cluster_endpoint   = var.cluster_endpoint
   machine_secrets    = talos_machine_secrets.talos.machine_secrets
   machine_type       = "controlplane"
   talos_version      = "v${var.talos_version}"
@@ -82,23 +76,23 @@ data "talos_machine_configuration" "controller" {
             {
               interface = "eth0"
               dhcp      = false
-              addresses = ["${local.controller_nodes[count.index].address}/${local.netmask}"]
+              addresses = ["${local.controller_nodes[count.index].address}/${local.network_mask}"]
               routes = [
                 {
                   network = "0.0.0.0/0"
-                  gateway = local.gateway
+                  gateway = var.cluster_node_network_gateway
                 }
               ]
               # see https://www.talos.dev/v1.6/talos-guides/network/vip/
               vip = {
-                ip = local.cluster_vip
+                ip = var.cluster_vip
               }
             }
           ]
-          nameservers = local.nameservers
+          nameservers = var.cluster_node_network_nameservers
         }
         time = {
-          servers = local.timeservers
+          servers = var.cluster_node_network_timeservers
         }
       }
     }),
@@ -109,7 +103,7 @@ data "talos_machine_configuration" "controller" {
 data "talos_machine_configuration" "worker" {
   count              = var.worker_count
   cluster_name       = var.cluster_name
-  cluster_endpoint   = local.cluster_endpoint
+  cluster_endpoint   = var.cluster_endpoint
   machine_secrets    = talos_machine_secrets.talos.machine_secrets
   machine_type       = "worker"
   talos_version      = "v${var.talos_version}"
@@ -129,19 +123,19 @@ data "talos_machine_configuration" "worker" {
             {
               interface = "eth0"
               dhcp      = false
-              addresses = ["${local.worker_nodes[count.index].address}/${local.netmask}"]
+              addresses = ["${local.worker_nodes[count.index].address}/${local.network_mask}"]
               routes = [
                 {
                   network = "0.0.0.0/0"
-                  gateway = local.gateway
+                  gateway = var.cluster_node_network_gateway
                 }
               ]
             }
           ]
-          nameservers = local.nameservers
+          nameservers = var.cluster_node_network_nameservers
         }
         time = {
-          servers = local.timeservers
+          servers = var.cluster_node_network_timeservers
         }
       }
     }),

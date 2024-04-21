@@ -23,8 +23,75 @@ variable "kubernetes_version" {
 }
 
 variable "cluster_name" {
-  type    = string
-  default = "example"
+  description = "A name to provide for the Talos cluster"
+  type        = string
+  default     = "example"
+}
+
+variable "cluster_vip" {
+  description = "A name to provide for the Talos cluster"
+  type        = string
+  default     = "10.17.3.9"
+}
+
+variable "cluster_endpoint" {
+  description = "The k8s api-server (VIP) endpoint"
+  type        = string
+  default     = "https://10.17.3.9:6443" # k8s api-server endpoint.
+}
+
+variable "cluster_node_network" {
+  description = "The IP network of the cluster nodes"
+  type        = string
+  default     = "10.17.3.0/24"
+}
+
+variable "cluster_node_network_first_controller_hostnum" {
+  description = "The hostnum of the first controller host"
+  type        = number
+  default     = 80
+}
+
+variable "cluster_node_network_first_worker_hostnum" {
+  description = "The hostnum of the first worker host"
+  type        = number
+  default     = 90
+}
+
+variable "cluster_node_network_load_balancer_first_hostnum" {
+  description = "The hostnum of the first load balancer host"
+  type        = number
+  default     = 130
+}
+
+variable "cluster_node_network_load_balancer_last_hostnum" {
+  description = "The hostnum of the last load balancer host"
+  type        = number
+  default     = 230
+}
+
+variable "cluster_node_network_gateway" {
+  description = "The gateway"
+  type        = string
+  default     = "10.17.3.1"
+}
+
+variable "cluster_node_network_nameservers" {
+  description = "The nameservers"
+  type        = list(string)
+  default     = ["1.1.1.1", "1.0.0.1"]
+}
+
+variable "cluster_node_network_timeservers" {
+  description = "The timeservers"
+  type        = list(string)
+  default     = ["pool.ntp.org"]
+}
+
+variable "cluster_node_domain" {
+  description = "the DNS domain of the cluster nodes"
+  type        = string
+  default     = "talos.test"
 }
 
 variable "controller_count" {
@@ -83,5 +150,6 @@ variable "vsphere_talos_template" {
 }
 
 variable "prefix" {
+  type    = string
   default = "terraform-talos-example"
 }
