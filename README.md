@@ -25,7 +25,10 @@ rm terraform terraform_*_linux_amd64.zip
 Install govc:
 
 ```bash
-wget https://github.com/vmware/govmomi/releases/download/v0.36.2/govc_Linux_x86_64.tar.gz
+# see https://github.com/hashicorp/vmware/govmomi
+# renovate: datasource=github-releases depName=vmware/govmomi
+govc_version='0.36.2'
+wget "https://github.com/vmware/govmomi/releases/download/v$govc_version/govc_Linux_x86_64.tar.gz"
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
 rm govc govc_Linux_x86_64.tar.gz
@@ -106,7 +109,9 @@ EOF
 Install talosctl:
 
 ```bash
-source secrets.sh
+# see https://github.com/siderolabs/talos/releases
+# renovate: datasource=github-releases depName=siderolabs/talos
+talos_version='1.6.7'
 wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
 sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
 rm talosctl-linux-amd64
@@ -218,9 +223,12 @@ kubectl delete -f example.yml
 Execute the [example hello-etcd stateful application](https://github.com/rgl/hello-etcd):
 
 ```bash
+# see https://github.com/rgl/hello-etcd/tags
+# renovate: datasource=github-tags depName=rgl/hello-etcd
+hello_etcd_version='0.0.2'
 install -d tmp/hello-etcd
 pushd tmp/hello-etcd
-wget -qO- https://raw.githubusercontent.com/rgl/hello-etcd/v0.0.2/manifest.yml \
+wget -qO- "https://raw.githubusercontent.com/rgl/hello-etcd/v$hello_etcd_version/manifest.yml" \
   | perl -pe 's,(storageClassName:).+,$1 linstor-lvm-r1,g' \
   | perl -pe 's,(storage:).+,$1 1Gi,g' \
   > manifest.yml
