@@ -27,7 +27,7 @@ Install govc:
 ```bash
 # see https://github.com/hashicorp/vmware/govmomi
 # renovate: datasource=github-releases depName=vmware/govmomi
-govc_version='0.36.2'
+govc_version='0.37.1'
 wget "https://github.com/vmware/govmomi/releases/download/v$govc_version/govc_Linux_x86_64.tar.gz"
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
