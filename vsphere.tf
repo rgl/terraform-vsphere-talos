@@ -37,7 +37,7 @@ resource "vsphere_virtual_machine" "controller" {
   firmware                    = data.vsphere_virtual_machine.talos_template.firmware
   num_cpus                    = 4
   num_cores_per_socket        = 4
-  memory                      = 2 * 1024
+  memory                      = 4 * 1024
   wait_for_guest_net_routable = false
   wait_for_guest_net_timeout  = 0
   wait_for_guest_ip_timeout   = 0
@@ -93,6 +93,13 @@ resource "vsphere_virtual_machine" "worker" {
     unit_number      = 0
     label            = "os"
     size             = max(data.vsphere_virtual_machine.talos_template.disks.0.size, 40) # [GiB]
+    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks.0.eagerly_scrub
+    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks.0.thin_provisioned
+  }
+  disk {
+    unit_number      = 1
+    label            = "data"
+    size             = 60 # [GiB]
     eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks.0.eagerly_scrub
     thin_provisioned = data.vsphere_virtual_machine.talos_template.disks.0.thin_provisioned
   }
