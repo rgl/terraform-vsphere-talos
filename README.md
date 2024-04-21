@@ -4,13 +4,21 @@ An example [Talos Linux Kubernetes cluster](https://www.talos.dev/) in vSphere V
 
 # Usage (Ubuntu 22.04 host)
 
-Install Terraform and govc:
+Install terraform:
 
 ```bash
-wget https://releases.hashicorp.com/terraform/1.7.5/terraform_1.7.5_linux_amd64.zip
-unzip terraform_1.7.5_linux_amd64.zip
+# see https://github.com/hashicorp/terraform/releases
+# renovate: datasource=github-releases depName=hashicorp/terraform
+terraform_version='1.8.1'
+wget "https://releases.hashicorp.com/terraform/$terraform_version/terraform_${$terraform_version}_linux_amd64.zip"
+unzip "terraform_${$terraform_version}_linux_amd64.zip"
 sudo install terraform /usr/local/bin
 rm terraform terraform_*_linux_amd64.zip
+```
+
+Install govc:
+
+```bash
 wget https://github.com/vmware/govmomi/releases/download/v0.36.2/govc_Linux_x86_64.tar.gz
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
