@@ -88,12 +88,6 @@ variable "cluster_node_network_timeservers" {
   default     = ["pool.ntp.org"]
 }
 
-variable "cluster_node_domain" {
-  description = "the DNS domain of the cluster nodes"
-  type        = string
-  default     = "talos.test"
-}
-
 variable "controller_count" {
   type    = number
   default = 1
@@ -113,39 +107,48 @@ variable "worker_count" {
 }
 
 variable "vsphere_user" {
+  type    = string
   default = "administrator@vsphere.local"
 }
 
 variable "vsphere_password" {
+  type      = string
   default   = "password"
   sensitive = true
 }
 
 variable "vsphere_server" {
+  type    = string
   default = "vsphere.local"
 }
 
 variable "vsphere_datacenter" {
+  type    = string
   default = "Datacenter"
 }
 
 variable "vsphere_compute_cluster" {
+  type    = string
   default = "Cluster"
 }
 
 variable "vsphere_network" {
+  type    = string
   default = "VM Network"
 }
 
 variable "vsphere_datastore" {
+  type    = string
   default = "Datastore"
 }
 
 variable "vsphere_folder" {
+  type    = string
   default = "example"
 }
 
 variable "vsphere_talos_template" {
+  type    = string
   default = "templates/talos-1.6.7-amd64"
 }
 

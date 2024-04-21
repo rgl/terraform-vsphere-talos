@@ -48,13 +48,13 @@ resource "vsphere_virtual_machine" "controller" {
   disk {
     unit_number      = 0
     label            = "os"
-    size             = max(data.vsphere_virtual_machine.talos_template.disks.0.size, 40) # [GiB]
-    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks.0.eagerly_scrub
-    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks.0.thin_provisioned
+    size             = max(data.vsphere_virtual_machine.talos_template.disks[0].size, 40) # [GiB]
+    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks[0].eagerly_scrub
+    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks[0].thin_provisioned
   }
   network_interface {
     network_id   = data.vsphere_network.network.id
-    adapter_type = data.vsphere_virtual_machine.talos_template.network_interface_types.0
+    adapter_type = data.vsphere_virtual_machine.talos_template.network_interface_types[0]
   }
   clone {
     template_uuid = data.vsphere_virtual_machine.talos_template.id
@@ -92,20 +92,20 @@ resource "vsphere_virtual_machine" "worker" {
   disk {
     unit_number      = 0
     label            = "os"
-    size             = max(data.vsphere_virtual_machine.talos_template.disks.0.size, 40) # [GiB]
-    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks.0.eagerly_scrub
-    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks.0.thin_provisioned
+    size             = max(data.vsphere_virtual_machine.talos_template.disks[0].size, 40) # [GiB]
+    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks[0].eagerly_scrub
+    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks[0].thin_provisioned
   }
   disk {
     unit_number      = 1
     label            = "data"
     size             = 60 # [GiB]
-    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks.0.eagerly_scrub
-    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks.0.thin_provisioned
+    eagerly_scrub    = data.vsphere_virtual_machine.talos_template.disks[0].eagerly_scrub
+    thin_provisioned = data.vsphere_virtual_machine.talos_template.disks[0].thin_provisioned
   }
   network_interface {
     network_id   = data.vsphere_network.network.id
-    adapter_type = data.vsphere_virtual_machine.talos_template.network_interface_types.0
+    adapter_type = data.vsphere_virtual_machine.talos_template.network_interface_types[0]
   }
   clone {
     template_uuid = data.vsphere_virtual_machine.talos_template.id

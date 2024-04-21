@@ -1,5 +1,7 @@
 # About
 
+[![Lint](https://github.com/rgl/terraform-vsphere-talos/actions/workflows/lint.yml/badge.svg)](https://github.com/rgl/terraform-vsphere-talos/actions/workflows/lint.yml)
+
 An example [Talos Linux Kubernetes cluster](https://www.talos.dev/) in vSphere Virtual Machines using terraform.
 
 [Cilium](https://cilium.io) is used to augment the Networking (e.g. the [`LoadBalancer`](https://cilium.io/use-cases/load-balancer/) and [`Ingress`](https://docs.cilium.io/en/stable/network/servicemesh/ingress/) controllers), Observability (e.g. [Service Map](https://cilium.io/use-cases/service-map/)), and Security (e.g. [Network Policy](https://cilium.io/use-cases/network-policy/)).
