@@ -3,7 +3,7 @@
 variable "talos_version" {
   type = string
   # renovate: datasource=github-releases depName=siderolabs/talos
-  default = "1.7.0"
+  default = "1.7.1"
   validation {
     condition     = can(regex("^\\d+(\\.\\d+)+", var.talos_version))
     error_message = "Must be a version number."
@@ -149,7 +149,7 @@ variable "vsphere_folder" {
 
 variable "vsphere_talos_template" {
   type    = string
-  default = "templates/talos-1.7.0-amd64"
+  default = "templates/talos-1.7.1-amd64"
 }
 
 variable "prefix" {
