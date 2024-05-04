@@ -157,6 +157,9 @@ govc vm.upgrade -vm.ipath "$vm_ipath"
 govc vm.change -vm.ipath "$vm_ipath" \
   -g other6xLinux64Guest \
   -e disk.enableUUID=TRUE
+govc device.boot -vm.ipath "$vm_ipath" \
+  -firmware efi \
+  -secure=false
 govc vm.info -vm.ipath "$vm_ipath" -json >talos-$talos_version-amd64.json
 govc vm.markastemplate -vm.ipath "$vm_ipath"
 ```
