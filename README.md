@@ -15,7 +15,7 @@ Install terraform:
 ```bash
 # see https://github.com/hashicorp/terraform/releases
 # renovate: datasource=github-releases depName=hashicorp/terraform
-terraform_version='1.8.2'
+terraform_version='1.8.5'
 wget "https://releases.hashicorp.com/terraform/$terraform_version/terraform_${$terraform_version}_linux_amd64.zip"
 unzip "terraform_${$terraform_version}_linux_amd64.zip"
 sudo install terraform /usr/local/bin
@@ -27,7 +27,7 @@ Install govc:
 ```bash
 # see https://github.com/hashicorp/vmware/govmomi
 # renovate: datasource=github-releases depName=vmware/govmomi
-govc_version='0.37.1'
+govc_version='0.37.3'
 wget "https://github.com/vmware/govmomi/releases/download/v$govc_version/govc_Linux_x86_64.tar.gz"
 tar xf govc_Linux_x86_64.tar.gz govc
 sudo install govc /usr/local/bin/govc
@@ -39,7 +39,7 @@ Install cilium cli:
 ```bash
 # see https://github.com/cilium/cilium-cli/releases
 # renovate: datasource=github-releases depName=cilium/cilium-cli
-cilium_version='0.16.6'
+cilium_version='0.16.10'
 cilium_url="https://github.com/cilium/cilium-cli/releases/download/v$cilium_version/cilium-linux-amd64.tar.gz"
 wget -O- "$cilium_url" | tar xzf - cilium
 sudo install cilium /usr/local/bin/cilium
@@ -51,7 +51,7 @@ Install cilium hubble:
 ```bash
 # see https://github.com/cilium/hubble/releases
 # renovate: datasource=github-releases depName=cilium/hubble
-hubble_version='0.13.3'
+hubble_version='0.13.5'
 hubble_url="https://github.com/cilium/hubble/releases/download/v$hubble_version/hubble-linux-amd64.tar.gz"
 wget -O- "$hubble_url" | tar xzf - hubble
 sudo install hubble /usr/local/bin/hubble
@@ -228,7 +228,7 @@ Execute the [example hello-etcd stateful application](https://github.com/rgl/hel
 ```bash
 # see https://github.com/rgl/hello-etcd/tags
 # renovate: datasource=github-tags depName=rgl/hello-etcd
-hello_etcd_version='0.0.2'
+hello_etcd_version='0.0.3'
 install -d tmp/hello-etcd
 pushd tmp/hello-etcd
 wget -qO- "https://raw.githubusercontent.com/rgl/hello-etcd/v$hello_etcd_version/manifest.yml" \
