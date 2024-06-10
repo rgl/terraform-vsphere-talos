@@ -5,9 +5,9 @@ set -euo pipefail
 # renovate: datasource=github-releases depName=siderolabs/talos
 talos_version="1.7.4"
 
-# see https://github.com/siderolabs/talos-vmtoolsd/pkgs/container/talos-vmtoolsd
-# renovate: datasource=docker depName=siderolabs/talos-vmtoolsd registryUrl=https://ghcr.io
-talos_vmtoolsd_extension_version="0.5.0"
+# see https://github.com/siderolabs/extensions/pkgs/container/vmtoolsd-guest-agent
+# renovate: datasource=docker depName=siderolabs/vmtoolsd-guest-agent registryUrl=https://ghcr.io
+talos_vmtoolsd_guest_agent_extension_version="0.5.1"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/drbd
 # see https://github.com/siderolabs/extensions/tree/main/storage/drbd
@@ -55,7 +55,7 @@ input:
   baseInstaller:
     imageRef: ghcr.io/siderolabs/installer:$talos_version_tag
   systemExtensions:
-    - imageRef: ghcr.io/siderolabs/talos-vmtoolsd:$talos_vmtoolsd_extension_version
+    - imageRef: ghcr.io/siderolabs/vmtoolsd-guest-agent:v$talos_vmtoolsd_guest_agent_extension_version
     - imageRef: ghcr.io/siderolabs/drbd:$talos_drbd_extension_version-v$talos_version
 output:
   kind: image
