@@ -3,7 +3,7 @@ set -euo pipefail
 
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version="1.7.1"
+talos_version="1.7.4"
 
 # see https://github.com/siderolabs/talos-vmtoolsd/pkgs/container/talos-vmtoolsd
 # renovate: datasource=docker depName=siderolabs/talos-vmtoolsd registryUrl=https://ghcr.io
@@ -14,7 +14,7 @@ talos_vmtoolsd_extension_version="0.5.0"
 # see https://github.com/LINBIT/drbd
 # NB the full version version is actually $version-v$talos_version, which we
 #    use in the talos systemExtension imageRef.
-# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v registryUrl=https://ghcr.io
+# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.7\.4 registryUrl=https://ghcr.io
 talos_drbd_extension_version="9.2.8"
 
 # see https://github.com/piraeusdatastore/piraeus-operator/releases
@@ -35,7 +35,7 @@ function step {
 function build_talos_image {
   # see https://www.talos.dev/v1.7/talos-guides/install/boot-assets/
   # see https://www.talos.dev/v1.7/advanced/metal-network-configuration/
-  # see Profile type at https://github.com/siderolabs/talos/blob/v1.7.1/pkg/imager/profile/profile.go#L22-L45
+  # see Profile type at https://github.com/siderolabs/talos/blob/v1.7.4/pkg/imager/profile/profile.go#L22-L45
   local talos_version_tag="v$talos_version"
   rm -rf tmp/talos
   mkdir -p tmp/talos
