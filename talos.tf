@@ -122,6 +122,16 @@ data "talos_machine_configuration" "controller" {
       cluster = {
         inlineManifests = [
           {
+            name     = "spin"
+            contents = <<-EOF
+            apiVersion: node.k8s.io/v1
+            kind: RuntimeClass
+            metadata:
+              name: wasmtime-spin-v2
+            handler: spin
+            EOF
+          },
+          {
             name = "cilium"
             contents = join("---\n", [
               data.helm_template.cilium.manifest,

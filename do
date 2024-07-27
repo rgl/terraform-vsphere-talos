@@ -17,6 +17,11 @@ talos_vmtoolsd_guest_agent_extension_version="0.5.1"
 # renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.7\.5 registryUrl=https://ghcr.io
 talos_drbd_extension_version="9.2.8"
 
+# see https://github.com/siderolabs/extensions/pkgs/container/spin
+# see https://github.com/siderolabs/extensions/tree/main/container-runtime/spin
+# renovate: datasource=docker depName=siderolabs/spin registryUrl=https://ghcr.io
+talos_spin_extension_version="0.15.0"
+
 # see https://github.com/piraeusdatastore/piraeus-operator/releases
 # renovate: datasource=github-releases depName=piraeusdatastore/piraeus-operator
 piraeus_operator_version="2.5.2"
@@ -57,6 +62,7 @@ input:
   systemExtensions:
     - imageRef: ghcr.io/siderolabs/vmtoolsd-guest-agent:v$talos_vmtoolsd_guest_agent_extension_version
     - imageRef: ghcr.io/siderolabs/drbd:$talos_drbd_extension_version-v$talos_version
+    - imageRef: ghcr.io/siderolabs/spin:v$talos_spin_extension_version
 output:
   kind: image
   imageOptions:
