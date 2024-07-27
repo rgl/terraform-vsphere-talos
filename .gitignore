@@ -7,4 +7,5 @@ tfplan
 talos-*-amd64.json
 talosconfig.yml
 kubeconfig.yml
+kubernetes-ingress-ca-crt.pem
 secrets*
