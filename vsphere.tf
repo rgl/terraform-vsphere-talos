@@ -81,7 +81,7 @@ resource "vsphere_virtual_machine" "worker" {
   firmware                    = data.vsphere_virtual_machine.talos_template.firmware
   num_cpus                    = 4
   num_cores_per_socket        = 4
-  memory                      = 2 * 1024
+  memory                      = 4 * 1024
   wait_for_guest_net_routable = false
   wait_for_guest_net_timeout  = 0
   wait_for_guest_ip_timeout   = 0

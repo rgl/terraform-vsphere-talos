@@ -1,6 +1,6 @@
 # see https://github.com/hashicorp/terraform
 terraform {
-  required_version = "1.8.5"
+  required_version = "1.9.3"
   required_providers {
     # see https://registry.terraform.io/providers/hashicorp/random
     # see https://github.com/hashicorp/terraform-provider-random
@@ -12,7 +12,7 @@ terraform {
     # see https://github.com/hashicorp/terraform-provider-vsphere
     vsphere = {
       source  = "hashicorp/vsphere"
-      version = "2.8.1"
+      version = "2.8.2"
     }
     # see https://registry.terraform.io/providers/siderolabs/talos
     # see https://github.com/siderolabs/terraform-provider-talos
@@ -24,7 +24,7 @@ terraform {
     # see https://github.com/hashicorp/terraform-provider-helm
     helm = {
       source  = "hashicorp/helm"
-      version = "2.13.2"
+      version = "2.14.0"
     }
   }
 }

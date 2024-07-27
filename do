@@ -3,7 +3,7 @@ set -euo pipefail
 
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version="1.7.4"
+talos_version="1.7.5"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/vmtoolsd-guest-agent
 # renovate: datasource=docker depName=siderolabs/vmtoolsd-guest-agent registryUrl=https://ghcr.io
@@ -14,12 +14,12 @@ talos_vmtoolsd_guest_agent_extension_version="0.5.1"
 # see https://github.com/LINBIT/drbd
 # NB the full version version is actually $version-v$talos_version, which we
 #    use in the talos systemExtension imageRef.
-# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.7\.4 registryUrl=https://ghcr.io
+# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.7\.5 registryUrl=https://ghcr.io
 talos_drbd_extension_version="9.2.8"
 
 # see https://github.com/piraeusdatastore/piraeus-operator/releases
 # renovate: datasource=github-releases depName=piraeusdatastore/piraeus-operator
-piraeus_operator_version="2.5.1"
+piraeus_operator_version="2.5.2"
 
 export CHECKPOINT_DISABLE='1'
 export TF_LOG='DEBUG' # TRACE, DEBUG, INFO, WARN or ERROR.
@@ -35,7 +35,7 @@ function step {
 function build_talos_image {
   # see https://www.talos.dev/v1.7/talos-guides/install/boot-assets/
   # see https://www.talos.dev/v1.7/advanced/metal-network-configuration/
-  # see Profile type at https://github.com/siderolabs/talos/blob/v1.7.4/pkg/imager/profile/profile.go#L22-L45
+  # see Profile type at https://github.com/siderolabs/talos/blob/v1.7.5/pkg/imager/profile/profile.go#L22-L45
   local talos_version_tag="v$talos_version"
   rm -rf tmp/talos
   mkdir -p tmp/talos
@@ -109,12 +109,12 @@ function health {
 
 function piraeus-install {
   # see https://github.com/piraeusdatastore/piraeus-operator
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/how-to/talos.md
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/tutorial/get-started.md
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/tutorial/replicated-volumes.md
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/explanation/components.md
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/reference/linstorsatelliteconfiguration.md
-  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.1/docs/reference/linstorcluster.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/how-to/talos.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/tutorial/get-started.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/tutorial/replicated-volumes.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/explanation/components.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/reference/linstorsatelliteconfiguration.md
+  # see https://github.com/piraeusdatastore/piraeus-operator/blob/v2.5.2/docs/reference/linstorcluster.md
   # see https://linbit.com/drbd-user-guide/linstor-guide-1_0-en/
   # see https://linbit.com/drbd-user-guide/linstor-guide-1_0-en/#ch-kubernetes
   # see 5.7.1. Available Parameters in a Storage Class at https://linbit.com/drbd-user-guide/linstor-guide-1_0-en/#s-kubernetes-sc-parameters

@@ -15,7 +15,7 @@ Install terraform:
 ```bash
 # see https://github.com/hashicorp/terraform/releases
 # renovate: datasource=github-releases depName=hashicorp/terraform
-terraform_version='1.8.5'
+terraform_version='1.9.3'
 wget "https://releases.hashicorp.com/terraform/$terraform_version/terraform_${$terraform_version}_linux_amd64.zip"
 unzip "terraform_${$terraform_version}_linux_amd64.zip"
 sudo install terraform /usr/local/bin
@@ -26,7 +26,8 @@ Install govc:
 
 ```bash
 # see https://github.com/hashicorp/vmware/govmomi
-# renovate: datasource=github-releases depName=vmware/govmomi
+# NB do not upgrade to 0.39.0 until https://github.com/vmware/govmomi/issues/3483 is fixed.
+# renovate: datasource=github-releases depName=vmware/govmomi extractVersion=^v?(?<version>0\.37\.)
 govc_version='0.37.3'
 wget "https://github.com/vmware/govmomi/releases/download/v$govc_version/govc_Linux_x86_64.tar.gz"
 tar xf govc_Linux_x86_64.tar.gz govc
@@ -39,7 +40,7 @@ Install cilium cli:
 ```bash
 # see https://github.com/cilium/cilium-cli/releases
 # renovate: datasource=github-releases depName=cilium/cilium-cli
-cilium_version='0.16.10'
+cilium_version='0.16.13'
 cilium_url="https://github.com/cilium/cilium-cli/releases/download/v$cilium_version/cilium-linux-amd64.tar.gz"
 wget -O- "$cilium_url" | tar xzf - cilium
 sudo install cilium /usr/local/bin/cilium
@@ -51,7 +52,7 @@ Install cilium hubble:
 ```bash
 # see https://github.com/cilium/hubble/releases
 # renovate: datasource=github-releases depName=cilium/hubble
-hubble_version='0.13.5'
+hubble_version='1.16.0'
 hubble_url="https://github.com/cilium/hubble/releases/download/v$hubble_version/hubble-linux-amd64.tar.gz"
 wget -O- "$hubble_url" | tar xzf - hubble
 sudo install hubble /usr/local/bin/hubble
@@ -76,7 +77,7 @@ Save your environment details as a script that sets the terraform variables from
 
 ```bash
 cat >secrets.sh <<'EOF'
-talos_version='1.7.4'
+talos_version='1.7.5'
 export TF_VAR_prefix='terraform-talos-example'
 export TF_VAR_vsphere_user='administrator@vsphere.local'
 export TF_VAR_vsphere_password='password'
@@ -111,7 +112,7 @@ Install talosctl:
 ```bash
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version='1.7.4'
+talos_version='1.7.5'
 wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
 sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
 rm talosctl-linux-amd64
@@ -145,12 +146,12 @@ govc import.spec tmp/talos/talos-$talos_version-vmware-amd64.ova \
   | jq \
       --arg network "$TF_VAR_vsphere_network" \
       '.NetworkMapping[0].Network = $network' \
-  >talos-$talos_version-vmware-amd64.ova.json
+  >tmp/talos/talos-$talos_version-vmware-amd64.ova.json
 govc import.ova \
   -ds $TF_VAR_vsphere_datastore \
   -folder "//$TF_VAR_vsphere_datacenter/vm/$(dirname $TF_VAR_vsphere_talos_template)" \
   -name $(basename $TF_VAR_vsphere_talos_template) \
-  -options talos-$talos_version-vmware-amd64.ova.json \
+  -options tmp/talos/talos-$talos_version-vmware-amd64.ova.json \
   tmp/talos/talos-$talos_version-vmware-amd64.ova
 vm_ipath="//$TF_VAR_vsphere_datacenter/vm/$TF_VAR_vsphere_talos_template"
 govc vm.upgrade -vm.ipath "$vm_ipath"
@@ -160,7 +161,7 @@ govc vm.change -vm.ipath "$vm_ipath" \
 govc device.boot -vm.ipath "$vm_ipath" \
   -firmware efi \
   -secure=false
-govc vm.info -vm.ipath "$vm_ipath" -json >talos-$talos_version-amd64.json
+govc vm.info -vm.ipath "$vm_ipath" -json >tmp/talos/talos-$talos_version-amd64.json
 govc vm.markastemplate -vm.ipath "$vm_ipath"
 ```
 
