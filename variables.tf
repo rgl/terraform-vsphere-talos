@@ -1,9 +1,9 @@
 # see https://github.com/siderolabs/talos/releases
-# see https://www.talos.dev/v1.7/introduction/support-matrix/
+# see https://www.talos.dev/v1.11/introduction/support-matrix/
 variable "talos_version" {
   type = string
   # renovate: datasource=github-releases depName=siderolabs/talos
-  default = "1.7.5"
+  default = "1.11.3"
   validation {
     condition     = can(regex("^\\d+(\\.\\d+)+", var.talos_version))
     error_message = "Must be a version number."
@@ -11,11 +11,11 @@ variable "talos_version" {
 }
 
 # see https://github.com/siderolabs/kubelet/pkgs/container/kubelet
-# see https://www.talos.dev/v1.7/introduction/support-matrix/
+# see https://www.talos.dev/v1.11/introduction/support-matrix/
 variable "kubernetes_version" {
   type = string
   # renovate: datasource=github-releases depName=siderolabs/kubelet
-  default = "1.30.3"
+  default = "1.34.1"
   validation {
     condition     = can(regex("^\\d+(\\.\\d+)+", var.kubernetes_version))
     error_message = "Must be a version number."
@@ -155,7 +155,7 @@ variable "vsphere_folder" {
 
 variable "vsphere_talos_template" {
   type    = string
-  default = "templates/talos-1.7.5-amd64"
+  default = "templates/talos-1.11.3-amd64"
 }
 
 variable "prefix" {

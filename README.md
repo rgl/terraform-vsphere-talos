@@ -79,7 +79,7 @@ Save your environment details as a script that sets the terraform variables from
 
 ```bash
 cat >secrets.sh <<'EOF'
-talos_version='1.7.5'
+talos_version='1.11.3'
 export TF_VAR_prefix='terraform-talos-example'
 export TF_VAR_vsphere_user='administrator@vsphere.local'
 export TF_VAR_vsphere_password='password'
@@ -114,7 +114,7 @@ Install talosctl:
 ```bash
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version='1.7.5'
+talos_version='1.11.3'
 wget https://github.com/siderolabs/talos/releases/download/v$talos_version/talosctl-linux-amd64
 sudo install talosctl-linux-amd64 /usr/local/bin/talosctl
 rm talosctl-linux-amd64

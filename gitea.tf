@@ -53,7 +53,7 @@ data "helm_template" "gitea" {
   chart      = "gitea"
   # see https://artifacthub.io/packages/helm/gitea/gitea
   # renovate: datasource=helm depName=gitea registryUrl=https://dl.gitea.com/charts
-  version      = "10.4.0" # app version 1.22.1.
+  version      = "11.0.0" # app version 1.24.5.
   kube_version = var.kubernetes_version
   api_versions = [
     "networking.k8s.io/v1/Ingress",

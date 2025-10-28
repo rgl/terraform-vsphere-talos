@@ -64,7 +64,7 @@ data "helm_template" "argocd" {
   chart      = "argo-cd"
   # see https://artifacthub.io/packages/helm/argo/argo-cd
   # renovate: datasource=helm depName=argo-cd registryUrl=https://argoproj.github.io/argo-helm
-  version      = "7.3.11" # app version 2.11.7.
+  version      = "9.0.3" # app version 3.1.x.
   kube_version = var.kubernetes_version
   api_versions = []
   values = [yamlencode({

@@ -3,24 +3,24 @@ set -euo pipefail
 
 # see https://github.com/siderolabs/talos/releases
 # renovate: datasource=github-releases depName=siderolabs/talos
-talos_version="1.7.5"
+talos_version="1.11.3"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/vmtoolsd-guest-agent
 # renovate: datasource=docker depName=siderolabs/vmtoolsd-guest-agent registryUrl=https://ghcr.io
-talos_vmtoolsd_guest_agent_extension_version="0.5.1"
+talos_vmtoolsd_guest_agent_extension_version="1.4.0"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/drbd
 # see https://github.com/siderolabs/extensions/tree/main/storage/drbd
 # see https://github.com/LINBIT/drbd
 # NB the full version version is actually $version-v$talos_version, which we
 #    use in the talos systemExtension imageRef.
-# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.7\.5 registryUrl=https://ghcr.io
-talos_drbd_extension_version="9.2.8"
+# renovate: datasource=docker depName=siderolabs/drbd extractVersion=^(?<version>.+)-v1\.11\.3 registryUrl=https://ghcr.io
+talos_drbd_extension_version="9.2.14"
 
 # see https://github.com/siderolabs/extensions/pkgs/container/spin
 # see https://github.com/siderolabs/extensions/tree/main/container-runtime/spin
 # renovate: datasource=docker depName=siderolabs/spin registryUrl=https://ghcr.io
-talos_spin_extension_version="0.15.0"
+talos_spin_extension_version="0.21.0"
 
 # see https://github.com/piraeusdatastore/piraeus-operator/releases
 # renovate: datasource=github-releases depName=piraeusdatastore/piraeus-operator
@@ -40,7 +40,7 @@ function step {
 function build_talos_image {
   # see https://www.talos.dev/v1.7/talos-guides/install/boot-assets/
   # see https://www.talos.dev/v1.7/advanced/metal-network-configuration/
-  # see Profile type at https://github.com/siderolabs/talos/blob/v1.7.5/pkg/imager/profile/profile.go#L22-L45
+  # see Profile type at https://github.com/siderolabs/talos/blob/v1.11.3/pkg/imager/profile/profile.go#L22-L45
   local talos_version_tag="v$talos_version"
   rm -rf tmp/talos
   mkdir -p tmp/talos

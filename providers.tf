@@ -1,30 +1,30 @@
 # see https://github.com/hashicorp/terraform
 terraform {
-  required_version = "1.9.3"
+  required_version = "1.13.4"
   required_providers {
     # see https://registry.terraform.io/providers/hashicorp/random
     # see https://github.com/hashicorp/terraform-provider-random
     random = {
       source  = "hashicorp/random"
-      version = "3.6.2"
+      version = "3.6.3"
     }
-    # see https://registry.terraform.io/providers/hashicorp/vsphere
+    # see https://registry.terraform.io/providers/vmware/vsphere
     # see https://github.com/hashicorp/terraform-provider-vsphere
     vsphere = {
-      source  = "hashicorp/vsphere"
-      version = "2.8.2"
+      source  = "vmware/vsphere"
+      version = "2.12.0"
     }
     # see https://registry.terraform.io/providers/siderolabs/talos
     # see https://github.com/siderolabs/terraform-provider-talos
     talos = {
       source  = "siderolabs/talos"
-      version = "0.5.0"
+      version = "0.9.0"
     }
     # see https://registry.terraform.io/providers/hashicorp/helm
     # see https://github.com/hashicorp/terraform-provider-helm
     helm = {
       source  = "hashicorp/helm"
-      version = "2.14.0"
+      version = "3.0.0"
     }
   }
 }

@@ -13,15 +13,17 @@ data "helm_template" "trust_manager" {
   repository = "https://charts.jetstack.io"
   chart      = "trust-manager"
   # renovate: datasource=helm depName=trust-manager registryUrl=https://charts.jetstack.io
-  version      = "0.12.0"
+  version      = "0.19.0"
   kube_version = var.kubernetes_version
   api_versions = []
-  set {
-    name  = "secretTargets.enabled"
-    value = "true"
-  }
-  set {
-    name  = "secretTargets.authorizedSecretsAll"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "secretTargets.enabled"
+      value = "true"
+    },
+    {
+      name  = "secretTargets.authorizedSecretsAll"
+      value = "true"
+    }
+  ]
 }

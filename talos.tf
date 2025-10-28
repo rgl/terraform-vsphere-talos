@@ -244,8 +244,8 @@ data "talos_client_configuration" "talos" {
   endpoints            = [for node in local.controller_nodes : node.address]
 }
 
-// see https://registry.terraform.io/providers/siderolabs/talos/0.5.0/docs/data-sources/cluster_kubeconfig
-data "talos_cluster_kubeconfig" "talos" {
+// see https://registry.terraform.io/providers/siderolabs/talos/latest/docs/resources/cluster_kubeconfig
+resource "talos_cluster_kubeconfig" "talos" {
   client_configuration = talos_machine_secrets.talos.client_configuration
   endpoint             = local.controller_nodes[0].address
   node                 = local.controller_nodes[0].address

@@ -73,13 +73,15 @@ data "helm_template" "cert_manager" {
   repository = "https://charts.jetstack.io"
   chart      = "cert-manager"
   # renovate: datasource=helm depName=cert-manager registryUrl=https://charts.jetstack.io
-  version      = "1.15.1"
+  version      = "1.19.1"
   kube_version = var.kubernetes_version
   api_versions = []
   # NB installCRDs is generally not recommended, BUT since this
   #    is a development cluster we YOLO it.
-  set {
-    name  = "installCRDs"
-    value = "true"
-  }
+  set = [
+    {
+      name  = "installCRDs"
+      value = "true"
+    }
+  ]
 }
